@@ -1,0 +1,16 @@
+{
+  "compatibility_date": "2025-04-01",
+  "main": "src/index.ts",
+  "name": "flat-sun-5d26",
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "923abca3-b21c-4d7c-95c8-e704f6dcf8f3",
+      "database_name": "silent-pine-1881-d1"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
