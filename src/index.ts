@@ -1,3 +1,8 @@
+import * as flatbuffers from 'flatbuffers';
+
+import * as MyGame from './my-game/sample';
+
+
 export default {
   async fetch(request): Promise<Response> {
     let html_content = "";
@@ -15,6 +20,29 @@ export default {
     html_content += "<p> Region: " + request.cf?.region + "</p>";
     html_content += "<p> RegionCode: " + request.cf?.regionCode + "</p>";
     html_content += "<p> Timezone: " + request.cf?.timezone + "</p>";
+
+    const url = new URL(request.url);
+    const pr = url.searchParams.get("name");
+
+    if (!pr) {
+      return new Response("Missing 'name' query parameter", { status: 400 });
+    }
+
+    const numberArray: number[] = pr.split(",")
+      .map(x => parseInt(x.trim(), 10))
+      .filter(n => !isNaN(n));
+
+    const bytes = new Uint8Array(numberArray);
+
+    let buf2 = new flatbuffers.ByteBuffer(bytes);
+
+    // Get an accessor to the root object inside the buffer.
+    let monster = MyGame.Monster.getRootAsMonster(buf2);
+    let hp = monster.hp();
+    let mana = monster.mana();
+
+    html_content += "<p> hp: " + hp + "</p>";
+    html_content += "<p> mana: " + mana + "</p>";
 
     let html = `<!DOCTYPE html>
       <head>
