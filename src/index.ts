@@ -28,8 +28,31 @@ function base64ToByteArray(base64String: string): Uint8Array {
 }
 export default {
   async fetch(request): Promise<Response> {
-
     const start = performance.now();
+    if (request.method == "POST") {
+       // Đảm bảo Content-Type là octet-stream
+      const contentType = request.headers.get("content-type");
+      if (contentType !== "application/octet-stream") {
+        return new Response("Unsupported content type", { status: 415 });
+      }
+
+      const arrayBuffer = await request.arrayBuffer();
+      const byteArray = new Uint8Array(arrayBuffer);
+      let buf22 = new flatbuffers.ByteBuffer(byteArray);
+      
+      let req = RequestPackage.getRootAsRequestPackage(buf22);
+      const arr = req.requestsTypeArray();
+      let x = "";
+      if (arr) {
+        for (const i of arr) {
+          x += " | " + RequestType[i] ;
+        }
+      }
+     
+      const end = performance.now();
+      const elapsedMs = end - start;
+      return new Response(x + " : " + elapsedMs.toFixed(5) + " ms", { status: 200 });
+    }
 
     let html_content = "";
     let html_style =
@@ -75,29 +98,8 @@ export default {
     ]);
     html_content += "<p> data: " + data + "</p>";
     html_content += "<p> orders: " + orders + "</p>";
-
-    if (request.method == "POST") {
-       // Đảm bảo Content-Type là octet-stream
-      const contentType = request.headers.get("content-type");
-      if (contentType !== "application/octet-stream") {
-        return new Response("Unsupported content type", { status: 415 });
-      }
-
-      const arrayBuffer = await request.arrayBuffer();
-      const byteArray = new Uint8Array(arrayBuffer);
-      let buf22 = new flatbuffers.ByteBuffer(byteArray);
-      
-      let req = RequestPackage.getRootAsRequestPackage(buf22);
-      const arr = req.requestsTypeArray();
-      let x = "";
-      if (arr) {
-        for (const i of arr) {
-          x += " | " + RequestType[i] ;
-        }
-      }
-      return new Response(x, { status: 200 });
-    }
-    else if (request.method == "GET") {
+    
+    if (request.method == "GET") {
       const byteArray = base64ToByteArray(pr);
   
       let buf22 = new flatbuffers.ByteBuffer(byteArray);
@@ -110,7 +112,6 @@ export default {
         }
       }
     }
-
 
     html_content += "<p> hp: " + hp + "</p>";
     html_content += "<p> mana: " + mana + "</p>";
