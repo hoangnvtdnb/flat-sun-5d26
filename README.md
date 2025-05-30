@@ -40,6 +40,8 @@ A live public deployment of this template is available at [https://d1-template.t
 
 ## Setup Steps
 
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+
 1. Install the project dependencies with a package manager of your choice:
    ```bash
    npm install
