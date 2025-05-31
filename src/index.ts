@@ -53,14 +53,10 @@ export default {
       const elapsedMs = end - start;
       return new Response(x + " : " + elapsedMs.toFixed(5) + " ms", { status: 200 });
     }
-    const stmt = env.DB.prepare("SELECT val FROM uint WHERE id = 1");
-    const { results } = await stmt.all();
-    let x = JSON.stringify(results, null, 2)
+    
     let html_content = "";
     let html_style =
       "body{padding:6em; font-family: sans-serif;} h1{color:#f6821f;}";
-
-    html_content += "<p> Query: " + x + "</p>";
 
     html_content += "<p> Colo: " + request.cf?.colo + "</p>";
     html_content += "<p> Country: " + request.cf?.country + "</p>";
@@ -81,6 +77,18 @@ export default {
       pr = ""
       // return new Response("Missing 'name' query parameter", { status: 400 });
     }
+    if (pr != "") {
+      await env.DB.prepare("UPDATE uint SET val = ? WHERE id = ?")
+            .bind(pr, 1)
+            .run();
+    }
+    // SELECT chỉ lấy 1 dòng
+    const { results } = await env.DB.prepare("SELECT val FROM uint WHERE id = ?")
+      .bind(1)
+      .all();
+    
+      html_content += "<p> Query: " + results[0]?.val + "</p>";
+
 
     const numberArray: number[] = pr.split(",")
       .map(x => parseInt(x.trim(), 10))
@@ -96,12 +104,12 @@ export default {
     let mana = monster.mana();
     const userId = "abc123";
 
-    const [data, orders] = await Promise.all([
-      getUserData(userId),
-      getUserOrders(userId),
-    ]);
-    html_content += "<p> data: " + data + "</p>";
-    html_content += "<p> orders: " + orders + "</p>";
+    // const [data, orders] = await Promise.all([
+    //   getUserData(userId),
+    //   getUserOrders(userId),
+    // ]);
+    // html_content += "<p> data: " + data + "</p>";
+    // html_content += "<p> orders: " + orders + "</p>";
     
     if (request.method == "GET") {
       const byteArray = base64ToByteArray(pr);
