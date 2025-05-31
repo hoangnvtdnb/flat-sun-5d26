@@ -3,13 +3,11 @@
   "main": "src/index.ts",
   "name": "flat-sun-5d26",
   "upload_source_maps": true,
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_id": "923abca3-b21c-4d7c-95c8-e704f6dcf8f3",
-      "database_name": "silent-pine-1881-d1"
-    }
-  ],
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "test",
+    "database_id": "89abbc60-1cb8-4cf7-a548-7ddd6c051c74"
+  }],
   "observability": {
     "enabled": true
   }
